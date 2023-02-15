@@ -1,0 +1,36 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": {
+          "Ref": "VpcCidrBlock"
+        },
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "TestCFT",
+            "Value": {
+              "Ref": "VPCTag"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "VpcCidrBlock": {
+      "Type": "String",
+      "Default": "10.0.0.0/16",
+      "Description": "The IPv4 network range for the VPC, in CIDR notation."
+    },
+    "VPCTag": {
+      "Type": "String",
+      "Default": "True",
+      "Description": "The Tag"
+    }
+  }
+}

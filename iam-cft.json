@@ -1,0 +1,207 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Template for IAM policy for DR Workflow",
+  "Metadata": {},
+  "Parameters": {
+    "IAMPolicyNameLambdaECS": {
+      "Description": "Enter the name IAM Policy name for ECS Desired Count Lambda",
+      "Type": "String",
+      "Default": "ECSDesiredCountSyncLambda-DR-IAMPolicy"
+    },
+    "IAMPolicyNameStepfunction": {
+      "Description": "Enter the name IAM Policy name for DR Stepfunction Workflow",
+      "Type": "String",
+      "Default": "Stepfunction-DR-IAMPolicy"
+    },
+    "IAMRoleNameLambdaECS": {
+      "Description": "Enter the name IAM Role name for ECS Desired Count Lambda",
+      "Type": "String",
+      "Default": "ECSDesiredCountSyncLambda-DR-IAMRole"
+    },
+    "IAMRoleNameStepfunction": {
+      "Description": "Enter the name IAM Role name for DR Stepfunction Workflow",
+      "Type": "String",
+      "Default": "Stepfunction-DR-IAMRole"
+    },
+    "LambdaName": {
+      "Description": "Enter ECS Image Sync lambda",
+      "Type": "String",
+      "Default": "ECS-Image-Sync-lambda"
+    },
+    "TableNameEC2": {
+      "Description": "Table for storing Count",
+      "Type": "String",
+      "Default": "table1"
+    },
+    "TableNameECS": {
+      "Description": "Table for storing Count",
+      "Type": "String",
+      "Default": "table2"
+    }
+  },
+  "Mappings": {},
+  "Conditions": {},
+  "Resources": {
+    "IAMRoleLambdaECS": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {"Fn::Join" : ["-",[ { "Ref": "IAMRoleNameLambdaECS" }, { "Ref": "AWS::Region" } ] ]},
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Ref": "IAMPolicyNameLambdaECS"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "VisualEditor0",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecs:ListServices",
+                    "ecs:UpdateService",
+                    "ecs:ListTagsForResource",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "ecs:RegisterTaskDefinition",
+                    "autoscaling:UpdateAutoScalingGroup",
+                    "ecs:DescribeServices",
+                    "ecs:ListTaskDefinitions",
+                    "ecs:DescribeTaskDefinition",
+                    "ecs:DescribeClusters",
+                    "ecs:ListClusters",
+                    "dynamodb:PutItem",
+                    "dynamodb:ListTables",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Sid": "VisualEditor1",
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:ListTables",
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:dynamodb:*:*:",
+                          "table/",
+                          {
+                            "Ref": "TableNameEC2"
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:dynamodb:*:*:",
+                          "table/",
+                          {
+                            "Ref": "TableNameECS"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "IAMRoleStepfunction": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName":  {"Fn::Join" : ["",[ { "Ref": "IAMRoleNameStepfunction" }, { "Ref": "AWS::Region" } ] ]},
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  {
+                    "Fn::Sub": "states.${AWS::Region}.amazonaws.com"
+                  }
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": {
+              "Ref": "IAMPolicyNameStepfunction"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:lambda:*:*:",
+                          "function:",
+                          {
+                            "Ref": "LambdaName"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "LamndaRoleARN": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IAMRoleLambdaECS",
+          "Arn"
+        ]
+      }
+    },
+    "StepfunctionRoleARN": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IAMRoleStepfunction",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

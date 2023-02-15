@@ -1,0 +1,11 @@
+{
+"Parameters" :{
+   "IAMPolicyNameLambdaECS": "IAM-Test-Policy",
+    "IAMPolicyNameStepfunction": "Stepfunction-DR-IAMPolicy",
+    "IAMRoleNameLambdaECS": "IAM-Test-Role-3",
+    "IAMRoleNameStepfunction": "SF-Role3",
+    "LambdaName": "ECS-Image-Sync-lambda",
+    "TableNameEC2": "table1",
+    "TableNameECS": "table2"
+  }
+}
