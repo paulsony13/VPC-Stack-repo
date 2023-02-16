@@ -1,0 +1,1 @@
+{'us-east-1': '[{"SL": 1, "Action": "Modify", "PhysicalResourceId": "vpc-0e5a15b66e6c142c2", "Replacement": "False", "LogicalResourceId": "VPC"}]', 'us-east-2': None}
