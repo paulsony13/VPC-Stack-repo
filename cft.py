@@ -203,6 +203,7 @@ def approval(change_set):
     # Create a step functions client
     client = boto3.client('stepfunctions', region_name='us-east-1')
     #Start the execution
+    print(json.dumps(change_set, indent=4))
     response=client.start_execution(
         stateMachineArn=SF_ARN,
         input=change_set
@@ -222,6 +223,8 @@ def approval(change_set):
     for event in response['events']:
         if event['type'] == 'ExecutionSucceeded':
             sf_response = event['executionSucceededEventDetails']['output']
+
+
     return sf_response
 
 
