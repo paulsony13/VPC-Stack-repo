@@ -1,6 +1,6 @@
 {
   "Parameters": {
     "VpcCidrBlock": "10.0.0.0/24",
-    "VPCTag": "False"
+    "VPCTag": "True"
   }
 }

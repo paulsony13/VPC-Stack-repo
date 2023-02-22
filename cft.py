@@ -259,7 +259,7 @@ def delete_change_set(region):
 def change_set_null_checker(region, change_set):
     if not change_set:
         print("Change set in region "+region+" is empty")
-        delete_change_set(region)
+        #delete_change_set(region)
 
 
 change_set = {}
@@ -292,16 +292,17 @@ elif change_set_ue1 or change_set_ue2  != 'initialstack':
     print("Executing Change Set")
     if response_approval['Status'] == 'Approved' and response_approval['Region'] == 'ue1':
         execute_stack_update('us-east-1')
-        delete_change_set('us-east-2')
+        #delete_change_set('us-east-2')
     elif response_approval['Status'] == 'Approved' and response_approval['Region'] == 'ue2':
         execute_stack_update('us-east-2')
-        delete_change_set('us-east-1')
+        #delete_change_set('us-east-1')
     elif response_approval['Status'] == 'Approved' and response_approval['Region'] == 'both':
         execute_stack_update('us-east-1')
         execute_stack_update('us-east-2')
     elif response_approval['Status'] == 'Rejected' and response_approval['Region'] == 'both':
-        delete_change_set('us-east-1')
-        delete_change_set('us-east-2')
+        pass
+        #delete_change_set('us-east-1')
+        #delete_change_set('us-east-2')
 
 
 
